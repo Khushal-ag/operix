@@ -3,6 +3,10 @@ import type { Metadata, Viewport } from "next";
 import "@/styles/globals.css";
 
 import { TailwindIndicator } from "@/components/tailwind-indicator";
+import { ThemeProvider } from "@/components/theme-provider";
+import { TRPCProvider } from "@/components/trpc-provider";
+import Header from "@/components/ui/header";
+import Sidebar from "@/components/ui/sidebar";
 import { siteConfig } from "@/config/site";
 import * as fonts from "@/lib/fonts";
 import { cn } from "@/lib/utils";
@@ -20,7 +24,22 @@ export default function RootLayout({
           "min-h-dvh scroll-smooth font-inter antialiased",
         )}
       >
-        {children}
+        <TRPCProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+              <Sidebar />
+              <div className="flex flex-col">
+                <Header />
+                {children}
+              </div>
+            </div>
+          </ThemeProvider>
+        </TRPCProvider>
         <TailwindIndicator />
       </body>
     </html>
