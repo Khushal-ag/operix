@@ -1,0 +1,9 @@
+{
+  "background_color": "#ffffff",
+  "description": "Backend Admin System. Powered by tRPC.",
+  "display": "standalone",
+  "name": "Operix",
+  "short_name": "Operix",
+  "start_url": "/",
+  "theme_color": "#ffffff"
+}
