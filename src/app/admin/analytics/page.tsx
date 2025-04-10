@@ -21,8 +21,6 @@ import {
 
 import { chartData } from ".";
 
-export const description = "An interactive bar chart";
-
 const chartConfig = {
   views: {
     label: "Page Views",

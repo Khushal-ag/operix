@@ -157,7 +157,7 @@ function HomePage() {
           >
             Enter Admin Panel
           </Link>
-          <p className="mt-4 text-sm text-gray-400">
+          <p className="mt-8 text-sm text-gray-400">
             Secure, scalable, and easy to use.
           </p>
         </div>

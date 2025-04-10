@@ -29,7 +29,7 @@ const formSchema = z.object({
 export default function SigninForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const createUser = trpc.auth.signIn.useMutation();
+  const authenticateUser = trpc.auth.signIn.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,11 +44,13 @@ export default function SigninForm() {
     setError(null);
 
     try {
-      await createUser.mutateAsync(values);
+      await authenticateUser.mutateAsync(values);
       form.reset();
-      // You could add a success state or redirect here if needed
-    } catch (err: unknown) {
-      setError(err?.message || "Failed to sign in. Please try again.");
+    } catch (err) {
+      setError(
+        //@ts-expect-error unknown type
+        (err?.message as string) || "Failed to sign in. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }

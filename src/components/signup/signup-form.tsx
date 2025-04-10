@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { AlertCircle, Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -20,6 +20,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/server/client";
 
+import { Alert, AlertDescription } from "../ui/alert";
+
 const formSchema = z.object({
   email: z.string().email(),
   username: z.string().min(2).max(50),
@@ -28,7 +30,8 @@ const formSchema = z.object({
 
 export default function SignupForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const createUser = trpc.auth.signUp.useMutation();
+  const [error, setError] = useState<string | null>(null);
+  const authenticateUser = trpc.auth.signUp.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,15 +44,31 @@ export default function SignupForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    createUser.mutate(values);
-    form.reset();
-    setIsLoading(false);
+    setError(null);
+
+    try {
+      authenticateUser.mutate(values);
+      form.reset();
+    } catch (err) {
+      setError(
+        //@ts-expect-error unknown type
+        (err?.message as string) || "Failed to sign in. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="grid gap-4">
+          {error && (
+            <Alert variant="destructive" className="flex items-center">
+              <AlertCircle className="size-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <div className="grid gap-4">
             <FormField
               control={form.control}
@@ -95,7 +114,10 @@ export default function SignupForm() {
               )}
             />
           </div>
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ?
+              <Loader className="mr-2 size-4 animate-spin" />
+            : null}
             Create an account
           </Button>
         </div>

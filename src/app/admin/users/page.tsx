@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { parseAsInteger, useQueryState } from "nuqs";
@@ -16,7 +17,7 @@ import UsersTable from "@/components/users/user-table";
 import { trpc } from "@/server/client";
 
 const DEFAULT_PAGE = 1;
-const DEFAULT_TOTAL_ITEMS = 7;
+const DEFAULT_TOTAL_ITEMS = 5;
 
 type UsersResponse = {
   items:
@@ -25,7 +26,7 @@ type UsersResponse = {
   totalPages: number;
 };
 
-export default function Users() {
+function UsersContent() {
   const searchParams = useSearchParams();
 
   const [currentSearch, setCurrentSearch] = useQueryState("search", {
@@ -52,7 +53,7 @@ export default function Users() {
   };
 
   return (
-    <div className="m-10 flex flex-col gap-5">
+    <div className="flex flex-col gap-5">
       <div className="flex w-full justify-between gap-3">
         <div>
           <Input
@@ -63,7 +64,7 @@ export default function Users() {
         </div>
 
         <Select
-          defaultValue="5"
+          defaultValue={DEFAULT_TOTAL_ITEMS.toString()}
           onValueChange={(value) => setTotalItems(parseInt(value))}
         >
           <SelectTrigger className="w-[180px]">
@@ -84,6 +85,16 @@ export default function Users() {
         currentPage={page}
         onPageChange={(page) => setPage(page)}
       />
+    </div>
+  );
+}
+
+export default function Users() {
+  return (
+    <div className="m-10">
+      <Suspense fallback={<div>Loading...</div>}>
+        <UsersContent />
+      </Suspense>
     </div>
   );
 }
