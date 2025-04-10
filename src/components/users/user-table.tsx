@@ -20,6 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatDate } from "@/lib/utils";
+
+import { Skeleton } from "../ui/skeleton";
 
 interface User {
   id: string;
@@ -31,17 +34,17 @@ interface User {
 interface UsersTableProps {
   users: User[];
   isLoading: boolean;
-  // totalPages: number;
-  // currentPage: number;
-  // onPageChange: (page: number) => void;
+  totalPages: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
 }
 
 const UsersTable = ({
   users,
   isLoading,
-  // totalPages,
-  // currentPage,
-  // onPageChange,
+  totalPages,
+  currentPage,
+  onPageChange,
 }: UsersTableProps) => {
   return (
     <Card>
@@ -61,18 +64,18 @@ const UsersTable = ({
           <TableBody>
             {isLoading &&
               Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={index} className="animate-pulse">
+                <TableRow key={index}>
                   <TableCell width={"40%"}>
-                    <div className="rounded-xl bg-gray-400/30 p-5"></div>
+                    <Skeleton className="rounded-xl bg-gray-400/30 p-5"></Skeleton>
                   </TableCell>
                   <TableCell>
-                    <div className="rounded-xl bg-gray-400/30 p-5"></div>
+                    <Skeleton className="rounded-xl bg-gray-400/30 p-5"></Skeleton>
                   </TableCell>
                   <TableCell>
-                    <div className="rounded-xl bg-gray-400/30 p-5"></div>
+                    <Skeleton className="rounded-xl bg-gray-400/30 p-5"></Skeleton>
                   </TableCell>
                   <TableCell>
-                    <div className="rounded-xl bg-gray-400/30 p-5"></div>
+                    <Skeleton className="rounded-xl bg-gray-400/30 p-5"></Skeleton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -89,40 +92,99 @@ const UsersTable = ({
                     {user.username}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {user.createdAt}
+                    {formatDate(user.createdAt)}
                   </TableCell>
                 </TableRow>
               ))}
           </TableBody>
         </Table>
-        {/* <Pagination>
+        <Pagination>
           <PaginationContent>
             {currentPage > 1 && (
               <PaginationItem>
-                <Button onClick={() => onPageChange(currentPage - 1)}>
-                  <ChevronLeft />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onPageChange(currentPage - 1)}
+                >
+                  <ChevronLeft className="size-4" />
                 </Button>
               </PaginationItem>
             )}
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
-                <Button onClick={() => onPageChange(index + 1)}>
-                  {index + 1}
+
+            {/* First page */}
+            {currentPage > 3 && (
+              <PaginationItem>
+                <Button variant="outline" onClick={() => onPageChange(1)}>
+                  1
                 </Button>
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            {totalPages !== currentPage && (
+            )}
+
+            {/* Ellipsis if needed */}
+            {currentPage > 4 && (
               <PaginationItem>
-                <Button onClick={() => onPageChange(currentPage + 1)}>
-                  <ChevronRight />
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+
+            {/* Pages around current page */}
+            {Array.from({ length: totalPages }).map((_, index) => {
+              const pageNumber = index + 1;
+              // Only show pages nearby current page
+              if (
+                (pageNumber === 1 && currentPage <= 3) ||
+                (pageNumber === totalPages && currentPage >= totalPages - 2) ||
+                Math.abs(pageNumber - currentPage) < 2
+              ) {
+                return (
+                  <PaginationItem key={index}>
+                    <Button
+                      variant={
+                        pageNumber === currentPage ? "default" : "outline"
+                      }
+                      onClick={() => onPageChange(pageNumber)}
+                    >
+                      {pageNumber}
+                    </Button>
+                  </PaginationItem>
+                );
+              }
+              return null;
+            })}
+
+            {/* Ellipsis if needed */}
+            {currentPage < totalPages - 3 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+
+            {/* Last page */}
+            {currentPage < totalPages - 2 && totalPages > 3 && (
+              <PaginationItem>
+                <Button
+                  variant="outline"
+                  onClick={() => onPageChange(totalPages)}
+                >
+                  {totalPages}
+                </Button>
+              </PaginationItem>
+            )}
+
+            {currentPage < totalPages && (
+              <PaginationItem>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onPageChange(currentPage + 1)}
+                >
+                  <ChevronRight className="size-4" />
                 </Button>
               </PaginationItem>
             )}
           </PaginationContent>
-        </Pagination> */}
+        </Pagination>
       </CardContent>
     </Card>
   );
