@@ -40,7 +40,7 @@ export default function Users() {
 
   const search = searchParams.get("search") ?? "";
 
-  const { data, isLoading } = trpc.users.get.useQuery({
+  const { data, isLoading } = trpc.users.getAll.useQuery({
     page: page < 1 ? DEFAULT_PAGE : page,
     totalItems: totalItems < 1 ? DEFAULT_TOTAL_ITEMS : totalItems,
     search,

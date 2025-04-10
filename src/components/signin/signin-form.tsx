@@ -4,10 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader } from "lucide-react";
+import { AlertCircle, Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,59 +22,57 @@ import { Input } from "@/components/ui/input";
 import { trpc } from "@/server/client";
 
 const formSchema = z.object({
-  email: z.string().email(),
-  username: z.string().min(2).max(50),
+  identifier: z.string().trim(),
   password: z.string().min(8).max(50),
 });
 
-export default function SignupForm() {
+export default function SigninForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const createUser = trpc.auth.signUp.useMutation();
+  const [error, setError] = useState<string | null>(null);
+  const createUser = trpc.auth.signIn.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
-      email: "",
+      identifier: "",
       password: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    createUser.mutate(values);
-    form.reset();
-    setIsLoading(false);
+    setError(null);
+
+    try {
+      await createUser.mutateAsync(values);
+      form.reset();
+      // You could add a success state or redirect here if needed
+    } catch (err: unknown) {
+      setError(err?.message || "Failed to sign in. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="grid gap-4">
+          {error && (
+            <Alert variant="destructive" className="flex items-center">
+              <AlertCircle className="size-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
           <div className="grid gap-4">
             <FormField
               control={form.control}
-              name="username"
+              name="identifier"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Username or Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Username" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="grid gap-2">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Email" {...field} />
+                    <Input placeholder="Username or Email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,14 +94,17 @@ export default function SignupForm() {
               )}
             />
           </div>
-          <Button type="submit" className="w-full">
-            Create an account
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ?
+              <Loader className="mr-2 size-4 animate-spin" />
+            : null}
+            Sign in
           </Button>
         </div>
         <div className="mt-4 text-center text-sm">
-          Already have an account?{" "}
-          <Link href="/signin" className="underline">
-            Sign in
+          Dont have an account?{" "}
+          <Link href="/signup" className="underline">
+            Sign up
           </Link>
         </div>
       </form>

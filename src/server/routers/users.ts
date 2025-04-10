@@ -8,7 +8,7 @@ import { hashPassword } from "@/lib/utils";
 import { publicProcedure, router } from "../trpc";
 
 export const userRouter = router({
-  get: publicProcedure
+  getAll: publicProcedure
     .input(
       z.object({
         page: z.number().int().positive(),
@@ -30,7 +30,6 @@ export const userRouter = router({
             )
           : undefined;
 
-        // Get total count for pagination
         const result = await db
           .select({ count: count() })
           .from(users)
@@ -39,7 +38,6 @@ export const userRouter = router({
         const totalCount = result[0]?.count ?? 0;
         const totalPages = Math.ceil(totalCount / limit);
 
-        // Get paginated users
         const items = await db
           .select({
             id: users.id,
@@ -62,47 +60,6 @@ export const userRouter = router({
       } catch (error) {
         console.error("Error fetching users:", error);
         throw new Error("Failed to fetch users");
-      }
-    }),
-
-  create: publicProcedure
-    .input(
-      z.object({
-        username: z.string().trim().min(2).max(50),
-        email: z.string().email().trim().toLowerCase(),
-        password: z.string().min(8).max(50),
-      }),
-    )
-    .mutation(async ({ input }) => {
-      try {
-        const { username, email, password } = input;
-
-        // Check if user already exists
-        const existingUser = await db
-          .select({ id: users.id })
-          .from(users)
-          .where(or(ilike(users.email, email), ilike(users.username, username)))
-          .limit(1);
-
-        if (existingUser.length > 0) {
-          throw new Error("Username or email already exists");
-        }
-
-        const result = await db
-          .insert(users)
-          .values({
-            username,
-            email,
-            password: hashPassword(password),
-          })
-          .returning({ id: users.id });
-
-        return result[0];
-      } catch (error) {
-        console.error("Error creating user:", error);
-        throw error instanceof Error ? error : (
-            new Error("Failed to create user")
-          );
       }
     }),
 });
