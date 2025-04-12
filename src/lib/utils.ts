@@ -13,7 +13,7 @@ export const hashPassword = (password: string) => {
   return hashSync(password, salt);
 };
 
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: Date): string => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",

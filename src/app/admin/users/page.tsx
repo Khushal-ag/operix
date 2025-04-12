@@ -21,7 +21,7 @@ const DEFAULT_TOTAL_ITEMS = 5;
 
 type UsersResponse = {
   items:
-    | { id: string; username: string; email: string; createdAt: string }[]
+    | { id: string; username: string; email: string; createdAt: Date }[]
     | null;
   totalPages: number;
 };

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Loader } from "lucide-react";
@@ -23,14 +24,23 @@ import { trpc } from "@/server/client";
 import { Alert, AlertDescription } from "../ui/alert";
 
 const formSchema = z.object({
-  email: z.string().email(),
   username: z.string().min(2).max(50),
+  email: z.string().email().toLowerCase(),
   password: z.string().min(8).max(50),
 });
 
+type SignUpResponse = {
+  token: string;
+  user: {
+    id: string;
+    username: string;
+    email: string;
+  };
+};
 export default function SignupForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const authenticateUser = trpc.auth.signUp.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -47,8 +57,14 @@ export default function SignupForm() {
     setError(null);
 
     try {
-      authenticateUser.mutate(values);
+      const resp = (await authenticateUser.mutateAsync(
+        values,
+      )) as SignUpResponse;
+
+      document.cookie = `auth-token=${resp.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
+
       form.reset();
+      router.push("/admin"); // Redirect to admin dashboard after successful signup
     } catch (err) {
       setError(
         //@ts-expect-error unknown type

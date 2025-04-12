@@ -1,13 +1,12 @@
 import { asc, count, ilike, or } from "drizzle-orm";
 import { z } from "zod";
 
-import db from "@/db/drizzle";
 import { users } from "@/db/schema";
 
-import { publicProcedure, router } from "../trpc";
+import { privateProcedure, router } from "../trpc";
 
 export const userRouter = router({
-  getAll: publicProcedure
+  getAll: privateProcedure
     .input(
       z.object({
         page: z.number().int().positive(),
@@ -15,7 +14,7 @@ export const userRouter = router({
         search: z.string().trim().optional(),
       }),
     )
-    .query(async ({ input }) => {
+    .query(async ({ ctx, input }) => {
       try {
         const { page, totalItems, search } = input;
         const offset = (page - 1) * totalItems;
@@ -29,7 +28,7 @@ export const userRouter = router({
             )
           : undefined;
 
-        const result = await db
+        const result = await ctx.db
           .select({ count: count() })
           .from(users)
           .where(searchCondition);
@@ -37,7 +36,7 @@ export const userRouter = router({
         const totalCount = result[0]?.count ?? 0;
         const totalPages = Math.ceil(totalCount / limit);
 
-        const items = await db
+        const items = await ctx.db
           .select({
             id: users.id,
             username: users.username,

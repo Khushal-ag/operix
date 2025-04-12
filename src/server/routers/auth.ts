@@ -2,8 +2,8 @@ import { compare } from "bcrypt-ts";
 import { ilike, or } from "drizzle-orm";
 import { z } from "zod";
 
-import db from "@/db/drizzle";
 import { users } from "@/db/schema";
+import { signJwt } from "@/lib/jwt";
 import { hashPassword } from "@/lib/utils";
 
 import { publicProcedure, router } from "../trpc";
@@ -12,17 +12,17 @@ export const authRouter = router({
   signUp: publicProcedure
     .input(
       z.object({
-        username: z.string().trim().min(2).max(50),
-        email: z.string().email().trim().toLowerCase(),
+        username: z.string().min(2).max(50),
+        email: z.string().email().toLowerCase(),
         password: z.string().min(8).max(50),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       try {
         const { username, email, password } = input;
 
-        const existingUser = await db
-          .select({ id: users.id })
+        const existingUser = await ctx.db
+          .select()
           .from(users)
           .where(or(ilike(users.email, email), ilike(users.username, username)))
           .limit(1);
@@ -31,23 +31,32 @@ export const authRouter = router({
           throw new Error("Username or email already exists");
         }
 
-        const result = await db
+        const hashedPassword = hashPassword(password);
+
+        const [user] = await ctx.db
           .insert(users)
           .values({
             username,
             email,
-            password: hashPassword(password),
+            password: hashedPassword,
           })
-          .returning({
-            id: users.id,
-            username: users.username,
-            email: users.email,
-          });
+          .returning();
+
+        if (!user) {
+          throw new Error("Failed to create user");
+        }
+
+        const token = signJwt({ id: user.id, email: user.email });
 
         return {
           success: true,
-          user: result[0],
           message: "User registered successfully",
+          token,
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+          },
         };
       } catch (error) {
         console.error("Error signing up:", error);
@@ -62,12 +71,11 @@ export const authRouter = router({
         password: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       try {
         const { identifier, password } = input;
 
-        // Find user by email or username
-        const user = await db
+        const [user] = await ctx.db
           .select()
           .from(users)
           .where(
@@ -78,32 +86,25 @@ export const authRouter = router({
           )
           .limit(1);
 
-        // Check if no user was found
-        if (!user || user.length === 0) {
+        if (!user) {
           throw new Error("Invalid credentials");
         }
 
-        const foundUser = user[0];
+        const valid = await compare(password, user.password);
 
-        // Additional check to ensure foundUser has a password
-        if (!foundUser?.password) {
-          throw new Error("Invalid credentials");
-        }
+        if (!valid) throw new Error("Invalid credentials");
 
-        // Verify password
-        const passwordMatch = await compare(password, foundUser.password);
-
-        if (!passwordMatch) {
-          throw new Error("Invalid credentials");
-        }
+        const token = signJwt({ id: user.id, email: user.email });
 
         return {
           success: true,
-          user: {
-            ...foundUser,
-            password: undefined,
-          },
           message: "Signed in successfully",
+          token,
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+          },
         };
       } catch (error) {
         console.error("Error signing in:", error);

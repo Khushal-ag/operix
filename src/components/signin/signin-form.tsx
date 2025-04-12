@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Loader } from "lucide-react";
@@ -26,9 +27,19 @@ const formSchema = z.object({
   password: z.string().min(8).max(50),
 });
 
+type SignInResponse = {
+  token: string;
+  user: {
+    id: string;
+    username: string;
+    email: string;
+  };
+};
+
 export default function SigninForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const authenticateUser = trpc.auth.signIn.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,8 +55,14 @@ export default function SigninForm() {
     setError(null);
 
     try {
-      await authenticateUser.mutateAsync(values);
+      const { token } = (await authenticateUser.mutateAsync(
+        values,
+      )) as SignInResponse;
+
+      document.cookie = `auth-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
+
       form.reset();
+      router.push("/admin");
     } catch (err) {
       setError(
         //@ts-expect-error unknown type
