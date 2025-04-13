@@ -10,7 +10,7 @@ export async function createContext() {
   let user = null;
 
   if (token) {
-    const payload = verifyJwt<{ id: string; email: string }>(token);
+    const payload = await verifyJwt<{ id: string; email: string }>(token);
     if (payload) {
       user = payload;
     }

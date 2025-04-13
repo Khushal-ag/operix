@@ -3,31 +3,31 @@ import Link from "next/link";
 
 function HomePage() {
   return (
-    <main className="flex min-h-screen flex-1 flex-col items-center justify-center bg-gradient-to-b from-zinc-900 via-black to-zinc-900 p-4">
-      <div className="flex w-full max-w-4xl flex-col items-center space-y-8 text-center">
-        {/* Logo and Title */}
+    <main className="flex min-h-screen flex-1 flex-col items-center bg-gradient-to-b from-zinc-900 via-black to-zinc-900 p-4">
+      {/* Header with Sign In and Sign Up buttons */}
+      <header className="fixed top-0 z-10 flex w-full items-center justify-between bg-transparent px-6 py-4 backdrop-blur-sm">
+        <div className="text-2xl font-bold tracking-tighter">
+          <span className="text-white dark:text-white">Oper</span>
+          <span className="text-orange-500 dark:text-orange-400">ix</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/signin"
+            className="text-orange-500 transition-all duration-300 hover:scale-105"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/signup"
+            className="text-white transition-all duration-300 hover:scale-105"
+          >
+            Sign Up
+          </Link>
+        </div>
+      </header>
+
+      <div className="mt-20 flex w-full max-w-4xl flex-col items-center space-y-8 text-center">
         <div className="flex flex-col items-center space-y-6">
-          <div className="rounded-lg bg-gradient-to-r from-orange-500 to-amber-600 p-5 shadow-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="48"
-              height="48"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-white"
-            >
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-              <polyline points="7.5 4.21 12 6.81 16.5 4.21" />
-              <polyline points="7.5 19.79 7.5 14.6 3 12" />
-              <polyline points="21 12 16.5 14.6 16.5 19.79" />
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-              <line x1="12" y1="22.08" x2="12" y2="12" />
-            </svg>
-          </div>
           <div className="space-y-2">
             <h1 className="text-5xl font-extrabold tracking-tighter md:text-6xl">
               <span className="text-white dark:text-white">Oper</span>
@@ -163,7 +163,7 @@ function HomePage() {
         </div>
 
         {/* Footer */}
-        <div className="pb-6 pt-10">
+        <div className="pt-2">
           <p className="text-sm text-gray-400 dark:text-gray-500">
             Built with <span className="text-orange-500">♥</span> using modern
             web technologies

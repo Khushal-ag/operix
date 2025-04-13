@@ -64,7 +64,7 @@ export default function SignupForm() {
       document.cookie = `auth-token=${resp.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
 
       form.reset();
-      router.push("/admin"); // Redirect to admin dashboard after successful signup
+      router.push("/admin");
     } catch (err) {
       setError(
         //@ts-expect-error unknown type
@@ -139,7 +139,7 @@ export default function SignupForm() {
         </div>
         <div className="mt-4 text-center text-sm">
           Already have an account?{" "}
-          <Link href="/signin" className="underline">
+          <Link href="/signin" className="text-orange-500 underline">
             Sign in
           </Link>
         </div>

@@ -122,7 +122,7 @@ export default function SigninForm() {
         </div>
         <div className="mt-4 text-center text-sm">
           Dont have an account?{" "}
-          <Link href="/signup" className="underline">
+          <Link href="/signup" className="text-orange-500 underline">
             Sign up
           </Link>
         </div>

@@ -46,7 +46,7 @@ export const authRouter = router({
           throw new Error("Failed to create user");
         }
 
-        const token = signJwt({ id: user.id, email: user.email });
+        const token = await signJwt({ id: user.id, email: user.email });
 
         return {
           success: true,
@@ -94,7 +94,7 @@ export const authRouter = router({
 
         if (!valid) throw new Error("Invalid credentials");
 
-        const token = signJwt({ id: user.id, email: user.email });
+        const token = await signJwt({ id: user.id, email: user.email });
 
         return {
           success: true,
