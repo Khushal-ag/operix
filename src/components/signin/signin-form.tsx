@@ -59,8 +59,8 @@ export default function SigninForm() {
 
       document.cookie = `auth-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; secure`;
 
-      form.reset();
       router.push("/admin");
+      form.reset();
     } catch (err) {
       setError(
         //@ts-expect-error unknown type

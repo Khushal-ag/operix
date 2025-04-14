@@ -98,7 +98,7 @@ const UsersTable = ({
                     {user.username}
                   </TableCell>
                   <TableCell className="hidden w-1/5 md:table-cell">
-                    <Badge variant={user.isAdmin ? "default" : "secondary"}>
+                    <Badge variant={"secondary"}>
                       {user.isAdmin ? "Yes" : "No"}
                     </Badge>
                   </TableCell>
