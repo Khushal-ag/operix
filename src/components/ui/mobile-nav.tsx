@@ -4,18 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Menu, Package2 } from "lucide-react";
+import { Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { navItems } from "@/lib/constants";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./card";
 import { Sheet, SheetContent, SheetTrigger } from "./sheet";
 
 export default function MobileNav() {
@@ -31,12 +24,9 @@ export default function MobileNav() {
       </SheetTrigger>
       <SheetContent side="left" className="flex flex-col">
         <nav className="grid gap-2 text-lg font-medium">
-          <Link
-            href="#"
-            className="flex items-center gap-2 text-lg font-semibold"
-          >
-            <Package2 className="size-6" />
-            <span className="sr-only">Acme Inc</span>
+          <Link href="/" className="flex items-center text-lg font-semibold">
+            <span className="">Oper</span>
+            <span className="text-orange-500">ix</span>
           </Link>
           {navItems.map((navItem) => (
             <Link
@@ -51,22 +41,6 @@ export default function MobileNav() {
             </Link>
           ))}
         </nav>
-        <div className="mt-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upgrade to Pro</CardTitle>
-              <CardDescription>
-                Unlock all features and get unlimited access to our support
-                team.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button size="sm" className="w-full">
-                Upgrade
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
       </SheetContent>
     </Sheet>
   );

@@ -23,3 +23,8 @@ export const formatDate = (dateString: Date): string => {
     minute: "2-digit",
   }).format(date);
 };
+
+export const generateUserId = (): string => {
+  const base36 = Date.now().toString(36).slice(-4).toUpperCase();
+  return `U${base36}`;
+};

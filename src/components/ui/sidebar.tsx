@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Bell, Package2 } from "lucide-react";
+import { Bell } from "lucide-react";
 
 import { navItems } from "@/lib/constants";
 
@@ -17,9 +17,9 @@ export default function Sidebar() {
     <aside className="hidden border-r bg-muted/40 md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Package2 className="size-6" />
-            <span className="">Operix</span>
+          <Link href="/" className="flex items-center text-lg font-semibold">
+            <span className="">Oper</span>
+            <span className="text-orange-500">ix</span>
           </Link>
           <Button variant="outline" size="icon" className="ml-auto size-8">
             <Bell className="size-4" />

@@ -1,4 +1,4 @@
-import { asc, count, ilike, or } from "drizzle-orm";
+import { asc, count, eq, ilike, or } from "drizzle-orm";
 import { z } from "zod";
 
 import { users } from "@/db/schema";
@@ -41,6 +41,7 @@ export const userRouter = router({
             id: users.id,
             username: users.username,
             email: users.email,
+            isAdmin: users.isAdmin,
             createdAt: users.createdAt,
           })
           .from(users)
@@ -60,4 +61,24 @@ export const userRouter = router({
         throw new Error("Failed to fetch users");
       }
     }),
+  getMe: privateProcedure.query(async ({ ctx }) => {
+    try {
+      const user = await ctx.db
+        .select({
+          id: users.id,
+          username: users.username,
+          email: users.email,
+          isAdmin: users.isAdmin,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .where(eq(users.id, ctx.user.id))
+        .limit(1);
+
+      return user[0] ?? null;
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      throw new Error("Failed to fetch user");
+    }
+  }),
 });

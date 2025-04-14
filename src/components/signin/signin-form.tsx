@@ -9,6 +9,8 @@ import { AlertCircle, Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import type { User } from "@/types";
+
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,11 +31,7 @@ const formSchema = z.object({
 
 type SignInResponse = {
   token: string;
-  user: {
-    id: string;
-    username: string;
-    email: string;
-  };
+  user: User;
 };
 
 export default function SigninForm() {
@@ -59,7 +57,7 @@ export default function SigninForm() {
         values,
       )) as SignInResponse;
 
-      document.cookie = `auth-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Strict`;
+      document.cookie = `auth-token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; secure`;
 
       form.reset();
       router.push("/admin");

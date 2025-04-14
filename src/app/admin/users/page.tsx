@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 
 import { parseAsInteger, useQueryState } from "nuqs";
 
+import type { User } from "@/types";
+
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -20,9 +22,7 @@ const DEFAULT_PAGE = 1;
 const DEFAULT_TOTAL_ITEMS = 5;
 
 type UsersResponse = {
-  items:
-    | { id: string; username: string; email: string; createdAt: Date }[]
-    | null;
+  items: User[] | null;
   totalPages: number;
 };
 

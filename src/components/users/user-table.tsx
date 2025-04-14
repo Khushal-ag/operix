@@ -4,6 +4,9 @@ import React from "react";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import type { User } from "@/types";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -23,13 +26,6 @@ import {
 import { formatDate } from "@/lib/utils";
 
 import { Skeleton } from "../ui/skeleton";
-
-interface User {
-  id: string;
-  email: string;
-  username: string;
-  createdAt: Date;
-}
 
 interface UsersTableProps {
   users: User[];
@@ -55,26 +51,36 @@ const UsersTable = ({
         <Table className="overflow-hidden">
           <TableHeader>
             <TableRow>
-              <TableHead className="hidden md:table-cell">ID</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead className="hidden sm:table-cell">Username</TableHead>
-              <TableHead className="hidden md:table-cell">Date</TableHead>
+              <TableHead className="hidden w-1/5 md:table-cell">ID</TableHead>
+              <TableHead className="w-1/5">Email</TableHead>
+              <TableHead className="hidden w-1/5 sm:table-cell">
+                Username
+              </TableHead>
+              <TableHead className="hidden w-1/5 md:table-cell">
+                Admin
+              </TableHead>
+              <TableHead className="hidden w-1/5 md:table-cell">
+                Created At
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading &&
               Array.from({ length: 5 }).map((_, index) => (
                 <TableRow key={index}>
-                  <TableCell width={"40%"}>
+                  <TableCell className="w-1/5">
                     <Skeleton className="rounded-xl bg-gray-400/30 p-5"></Skeleton>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="w-1/5">
                     <Skeleton className="rounded-xl bg-gray-400/30 p-5"></Skeleton>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="w-1/5">
                     <Skeleton className="rounded-xl bg-gray-400/30 p-5"></Skeleton>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="w-1/5">
+                    <Skeleton className="rounded-xl bg-gray-400/30 p-5"></Skeleton>
+                  </TableCell>
+                  <TableCell className="w-1/5">
                     <Skeleton className="rounded-xl bg-gray-400/30 p-5"></Skeleton>
                   </TableCell>
                 </TableRow>
@@ -82,23 +88,28 @@ const UsersTable = ({
             {!isLoading &&
               users.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell className="hidden md:inline">
+                  <TableCell className="hidden w-1/5 md:table-cell">
                     <div className="text-sm text-muted-foreground">
                       {user.id}
                     </div>
                   </TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell className="w-1/5">{user.email}</TableCell>
+                  <TableCell className="hidden w-1/5 sm:table-cell">
                     {user.username}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell className="hidden w-1/5 md:table-cell">
+                    <Badge variant={user.isAdmin ? "default" : "secondary"}>
+                      {user.isAdmin ? "Yes" : "No"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden w-1/5 md:table-cell">
                     {formatDate(user.createdAt)}
                   </TableCell>
                 </TableRow>
               ))}
           </TableBody>
         </Table>
-        <Pagination>
+        <Pagination className="mt-4">
           <PaginationContent>
             {currentPage > 1 && (
               <PaginationItem>

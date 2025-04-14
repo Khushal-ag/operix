@@ -7,6 +7,7 @@ export async function signJwt(
   payload: {
     id: string;
     email: string;
+    username: string;
   },
   expiresIn = "7d",
 ): Promise<string> {

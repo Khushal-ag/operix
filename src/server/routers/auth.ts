@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { users } from "@/db/schema";
 import { signJwt } from "@/lib/jwt";
-import { hashPassword } from "@/lib/utils";
+import { generateUserId, hashPassword } from "@/lib/utils";
 
 import { publicProcedure, router } from "../trpc";
 
@@ -36,6 +36,7 @@ export const authRouter = router({
         const [user] = await ctx.db
           .insert(users)
           .values({
+            id: generateUserId(),
             username,
             email,
             password: hashedPassword,
@@ -46,7 +47,11 @@ export const authRouter = router({
           throw new Error("Failed to create user");
         }
 
-        const token = await signJwt({ id: user.id, email: user.email });
+        const token = await signJwt({
+          id: user.id,
+          email: user.email,
+          username: user.username,
+        });
 
         return {
           success: true,
@@ -56,6 +61,8 @@ export const authRouter = router({
             id: user.id,
             username: user.username,
             email: user.email,
+            isAdmin: user.isAdmin,
+            createdAt: user.createdAt,
           },
         };
       } catch (error) {
@@ -94,7 +101,11 @@ export const authRouter = router({
 
         if (!valid) throw new Error("Invalid credentials");
 
-        const token = await signJwt({ id: user.id, email: user.email });
+        const token = await signJwt({
+          id: user.id,
+          email: user.email,
+          username: user.username,
+        });
 
         return {
           success: true,
@@ -104,6 +115,8 @@ export const authRouter = router({
             id: user.id,
             username: user.username,
             email: user.email,
+            isAdmin: user.isAdmin,
+            createdAt: user.createdAt,
           },
         };
       } catch (error) {
