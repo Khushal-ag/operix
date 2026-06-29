@@ -65,7 +65,7 @@
     "autoprefixer": "^10.5.2",
     "babel-plugin-react-compiler": "^19.0.0-beta-ebf51a3-20250411",
     "drizzle-kit": "^0.31.10",
-    "eslint": "9.39.4",
+    "eslint": "10.6.0",
     "eslint-config-next": "15.5.19",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-compiler": "^19.0.0-beta-ebf51a3-20250411",
